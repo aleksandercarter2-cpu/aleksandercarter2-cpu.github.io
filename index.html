@@ -1,0 +1,1032 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coin Craze</title>
+<style>
+*{box-sizing:border-box}
+:root{--bg:#101827;--panel:#202d45;--card:#172238;--border:#354666;--accent:#ffd447;--text:#fff;--muted:#b7c5df}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,var(--bg),#202c48);color:var(--text);text-align:center;min-height:100vh}
+header{padding:24px 12px 10px}
+h1{color:var(--accent);margin:0 0 8px;font-size:2.4rem}
+.subtitle,.small{color:var(--muted)}
+.stats{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;padding:12px}
+.stat,.panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:15px}
+.stat{min-width:135px}
+.stat strong{display:block;color:var(--accent);font-size:1.25rem;margin-top:7px;overflow-wrap:anywhere}
+main{display:grid;grid-template-columns:minmax(260px,1fr) minmax(280px,1fr);gap:20px;max-width:1200px;margin:20px auto;padding:0 16px;text-align:left}
+.panel{margin-bottom:16px}
+.panel h2{margin-top:0;color:var(--accent)}
+.center{text-align:center}
+#coin{font-size:110px;cursor:pointer;user-select:none;display:inline-block;margin:16px 0;filter:drop-shadow(0 0 18px #ffc92866)}
+#coin:active{transform:scale(.88) rotate(-10deg)}
+button{background:var(--accent);color:#192238;border:0;border-radius:9px;padding:11px 14px;font-size:14px;font-weight:bold;cursor:pointer;transition:.15s;margin:3px}
+button:hover{filter:brightness(1.1);transform:translateY(-1px)}
+button:disabled{background:#596477;color:#c6ccda;cursor:not-allowed;transform:none}
+input,select{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:#101827;color:var(--text);margin:4px 0 10px}
+label{display:block;text-align:left;font-size:13px;color:var(--muted);margin-top:7px}
+.upgrade,.class-card,.tree-node{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:12px;margin:9px 0}
+.upgrade{display:flex;gap:12px;align-items:center}
+.emoji{font-size:30px}
+.info{flex:1;min-width:0}
+.info h3,.class-card h3,.tree-node h3{margin:0 0 5px;font-size:16px}
+.info p,.class-card p,.tree-node p{font-size:12px;color:var(--muted);margin:5px 0}
+.upgrade button{min-width:85px}
+.button-row{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:10px 0}
+.button-row button{flex:1 1 125px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px}
+.class-card{margin:0;text-align:center}
+.class-card.selected{border:2px solid #8ef0b0;background:#17352f}
+.class-card.locked{opacity:.7}
+.class-icon{font-size:35px}
+.class-card button,.tree-node button{width:100%;margin-top:7px}
+.tree-node.owned{border-color:#8ef0b0;background:#17352f}
+.rebirth{background:#3c2861;border-color:#8f63c7}
+.rebirth h2{color:#d9b6ff}
+#message{min-height:22px;color:#8ef0b0}
+#achievements{line-height:1.8}
+.locked{color:#8490a8}
+.unlocked{color:#8ef0b0}
+.progress-track{height:9px;background:#111a2b;border-radius:8px;overflow:hidden;margin:10px 0}
+.progress-fill{height:100%;background:linear-gradient(90deg,#ffd447,#d9b6ff)}
+.hidden{display:none!important}
+#jaximumPanel{border:3px solid #1685ff;background:#eaf5ff;color:#102b50}
+#jaximumPanel h2,#jaximumPanel h3{color:#1269cc}
+#jaximumPanel p,#jaximumPanel label{color:#244b78}
+#jaximumPanel input,#jaximumPanel select{background:#fff;color:#102b50;border-color:#80bdff}
+#jaximumPanel .admin-section{background:#fff;border:1px solid #9bcfff;border-radius:10px;padding:12px;margin:10px 0}
+.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+body.jaximum-theme{background:linear-gradient(135deg,#d9edff,#fff,#a9d5ff);color:#102b50;--bg:#d9edff;--panel:#fff;--card:#edf6ff;--border:#5ba7ff;--accent:#1677e8;--text:#102b50;--muted:#31577f}
+body.jaximum-theme .subtitle,body.jaximum-theme .small{color:#31577f}
+body.jaximum-theme .stat strong,body.jaximum-theme .panel h2{color:#1677e8}
+body.jaximum-theme button{background:#1677e8;color:white}
+body.jaximum-theme .rebirth{background:#e7f2ff;border-color:#5ba7ff}
+body.jaximum-theme .class-card.selected,body.jaximum-theme .tree-node.owned{background:#d6ebff;border-color:#1677e8}
+footer{padding:10px 12px 28px;color:var(--muted);font-size:12px}
+#alchemyPage{max-width:1150px;margin:22px auto;padding:20px;text-align:left;background:linear-gradient(145deg,#172c2c,#202d45);border:2px solid #69d9b2}
+#alchemyPage h2{color:#8ef0c4}
+#alchemyPage .alchemy-intro{text-align:center;color:var(--muted)}
+#alchemyPage .potion-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
+#alchemyPage .potion-card{background:#102323;border:1px solid #397f70;border-radius:14px;padding:16px;text-align:center;display:flex;flex-direction:column;align-items:stretch;gap:7px}
+#alchemyPage .potion-icon{font-size:46px}
+#alchemyPage .potion-card h3{margin:0;color:#8ef0c4}
+#alchemyPage .potion-card p{color:#c5e5dc;font-size:13px;line-height:1.45;margin:4px 0}
+#alchemyPage .potion-card button{margin-top:auto;background:#8ef0c4;color:#12312a}
+#alchemyPage .potion-card button:disabled{background:#526c65;color:#d2e2dc}
+#alchemyPage .potion-owned{border-color:#8ef0c4;box-shadow:0 0 14px #8ef0c422}
+#alchemyPage .potion-owned .owned-label{color:#8ef0c4;font-weight:bold}
+#openAlchemyButton{background:linear-gradient(135deg,#1d805e,#39c99a);color:#071f19;font-size:16px;padding:14px 20px}
+#alchemyEffects{background:#102323;border:1px solid #397f70;border-radius:10px;padding:12px;line-height:1.8}
+@media(max-width:700px){#alchemyPage{margin:12px;padding:12px}#alchemyPage .potion-grid{grid-template-columns:1fr}}
+#classPanel{width:calc(100% - 32px);max-width:1168px;margin:20px auto;padding:18px}
+#classPanel h2,#classPanel>p{text-align:center}
+#classScroller{display:flex;align-items:center;gap:8px}
+#classScroller .class-nav{flex:0 0 42px;height:58px;font-size:24px;padding:6px;margin:0}
+#classes{display:flex;flex:1 1 auto;min-width:0;flex-wrap:nowrap;gap:14px;overflow-x:auto;overflow-y:hidden;padding:14px 6px 20px;scroll-snap-type:x mandatory;scrollbar-width:auto;scrollbar-color:var(--accent) var(--card);scroll-behavior:smooth}
+#classScrollHint{text-align:center;font-size:12px;color:var(--muted);margin:0 0 8px}
+#classes::-webkit-scrollbar{height:12px}
+#classes::-webkit-scrollbar-track{background:var(--card);border-radius:10px}
+#classes::-webkit-scrollbar-thumb{background:var(--accent);border-radius:10px}
+#classes .class-card{flex:0 0 calc((100% - 70px)/6);min-width:145px;min-height:205px;display:flex;flex-direction:column;justify-content:space-between;margin:0;padding:14px 10px;border-radius:14px;scroll-snap-align:start}
+#classes .class-card:hover{transform:translateY(-5px);border-color:var(--accent)}
+#classes .class-icon{font-size:38px;margin-bottom:8px}
+#classes .class-card h3{font-size:13px;overflow-wrap:anywhere}
+#classes .class-card p{font-size:11px;line-height:1.4}
+#classes .class-card button{width:100%;margin-top:10px}
+#classes .class-card.selected{border:2px solid #8ef0b0;box-shadow:0 0 14px #8ef0b033}
+body.jaximum-theme #classes{scrollbar-color:#1677e8 #edf6ff}
+@media(min-width:701px) and (max-width:950px){
+ #classes .class-card{flex-basis:calc((100% - 42px)/4);min-width:135px}
+}
+@media(max-width:700px){
+ main{grid-template-columns:1fr}
+ h1{font-size:2rem}
+ #coin{font-size:90px}
+ .upgrade{flex-wrap:wrap}
+ .upgrade button{flex:1}
+ #classPanel{width:calc(100% - 20px);padding:12px}
+ #classScroller{gap:4px}
+ #classScroller .class-nav{flex-basis:32px;width:32px;font-size:18px}
+ #classes .class-card{flex-basis:calc((100% - 14px)/2);min-width:145px;min-height:185px}
+}
+#specialPathsPanel{width:calc(100% - 32px);max-width:1168px;margin:20px auto;padding:18px}
+#specialPathsPanel h2,#specialPathsPanel>.small{text-align:center}
+.special-path-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:16px}
+.special-path{background:linear-gradient(160deg,#1c2941,#111b2d);border:1px solid #405779;border-radius:14px;padding:14px;min-width:0}
+.special-path.active{border:2px solid #8ef0b0;box-shadow:0 0 16px #8ef0b022}
+.special-path h3{margin:0 0 5px;color:var(--accent)}
+.special-path .path-desc{font-size:12px;color:var(--muted);min-height:30px}
+.path-tree{display:flex;flex-direction:column;align-items:stretch;gap:0;margin:12px 0}
+.path-node{position:relative;background:#101827;border:1px solid #354666;border-radius:10px;padding:10px;text-align:left}
+.path-node:not(:last-child){margin-bottom:18px}
+.path-node:not(:last-child):after{content:"▼";position:absolute;left:calc(50% - 7px);bottom:-19px;color:#7c8ba8;font-size:13px}
+.path-node.owned{background:#17352f;border-color:#8ef0b0}
+.path-node h4{margin:0 0 4px;font-size:13px}
+.path-node p{margin:0;color:var(--muted);font-size:11px;line-height:1.4}
+.path-node .node-status{display:block;margin-top:5px;color:#8ef0b0;font-size:11px;font-weight:bold}
+.path-node button{width:100%;margin:8px 0 0;padding:8px;font-size:12px}
+.special-path .path-actions{display:flex;gap:6px}
+.special-path .path-actions button{flex:1}
+#specialPathHint{line-height:1.6}
+body.jaximum-theme .special-path{background:linear-gradient(160deg,#edf6ff,#dceeff)}
+body.jaximum-theme .path-node{background:#fff}
+body.jaximum-theme .path-node.owned{background:#d6ebff}
+@media(max-width:700px){#specialPathsPanel{width:calc(100% - 20px);padding:12px}.special-path-grid{grid-template-columns:1fr}}
+#globalLeaderboard{max-width:1200px;margin:20px auto}
+#leaderboardStatus{font-size:13px;color:var(--muted);min-height:20px}
+#leaderboardTable{width:100%;border-collapse:collapse;text-align:left}
+#leaderboardTable th,#leaderboardTable td{padding:10px 8px;border-bottom:1px solid var(--border);overflow-wrap:anywhere}
+#leaderboardTable th{color:var(--accent)}
+#leaderboardTable tr.me{background:#ffffff12}
+.leaderboard-wrap{overflow-x:auto}
+</style>
+</head>
+<body>
+<header>
+<h1>🪙 COIN CRAZE</h1>
+<div class="subtitle">Build your coin empire, unlock classes, and master the skill tree!</div>
+<div style="max-width:330px;margin:14px auto 0">
+<label for="playerName">Player name</label>
+<input id="playerName" placeholder="Enter your name" maxlength="24">
+</div>
+</header>
+
+<div class="stats">
+<div class="stat">Coins<strong id="coins">0</strong></div>
+<div class="stat">Per Click<strong id="power">1</strong></div>
+<div class="stat">Coins / Second<strong id="cps">0</strong></div>
+<div class="stat">Prestige Stars<strong id="stars">0</strong></div>
+<div class="stat">Prestige Level<strong id="prestige">0</strong></div>
+</div>
+
+<main id="mainGame">
+<section>
+<div class="panel center">
+<h2>🪙 Your Coin Mine</h2>
+<p>Click the coin to earn money!</p>
+<div id="coin" role="button" tabindex="0">🪙</div>
+<div><button id="clickButton">CLICK FOR COINS!</button></div>
+<p id="message">Your empire starts now!</p>
+<p class="small">Golden clicks can earn 5× coins.</p>
+</div>
+<div class="panel"><h2>🏆 Achievements</h2><div id="achievements"></div></div>
+<div class="panel rebirth center">
+<h2>✨ Prestige / Rebirth</h2>
+<p>Earn one star for every 100,000 lifetime coins. Rebirth resets coins and upgrades but keeps stars, classes, and skills.</p>
+<div class="progress-track"><div id="rebirthProgress" class="progress-fill"></div></div>
+<p id="rebirthInfo" class="small"></p>
+<button id="rebirthButton">✨ REBIRTH</button>
+</div>
+<div class="panel">
+<h2>🌳 Permanent Skill Tree</h2>
+<p class="small">Spend stars on bonuses that survive rebirth.</p>
+<p>Unspent stars: <strong id="treeStars">0</strong></p>
+<div id="skillTree" class="grid"></div>
+</div>
+</section>
+
+<section>
+<div class="panel">
+<h2>🛒 Upgrade Shop</h2>
+<div class="button-row">
+<button id="buyModeButton">Buy: ×1</button>
+<button id="buyAllButton">Buy All Affordable</button>
+</div>
+<div class="button-row">
+<button id="burstButton">⚡ Coin Burst</button>
+<button id="luckyButton">🍀 Lucky Mode: OFF</button>
+</div>
+<p id="boostInfo" class="small"></p>
+<div id="upgrades"></div>
+</div>
+</section>
+</main>
+
+<div id="alchemyPortal" class="panel center hidden" style="max-width:1200px;margin:20px auto">
+<h2>⚗️ Alchemist's Portal</h2>
+<p>Your Alchemist class unlocks a special potion laboratory. Brew potions for permanent upgrades!</p>
+<button id="openAlchemyButton">⚗️ ENTER POTION LAB</button>
+</div>
+
+<section id="alchemyPage" class="panel hidden" aria-label="Alchemist potion laboratory">
+<div class="center">
+<h2>⚗️ THE ALCHEMY LABORATORY</h2>
+<p class="alchemy-intro">Welcome, Alchemist! Spend coins to brew powerful potions. Each recipe can be crafted once, and its bonus is permanent—even after rebirth.</p>
+<p>Available coins: <strong id="alchemyCoins">0</strong></p>
+</div>
+<div id="alchemyEffects"><strong>🧪 Permanent potion effects</strong><div id="alchemyEffectList">No potions brewed yet.</div></div>
+<div id="potionGrid" class="potion-grid"></div>
+<div class="center" style="margin-top:20px"><button id="leaveAlchemyButton">← RETURN TO COIN CRAZE</button></div>
+</section>
+
+<section class="panel" id="classPanel">
+<h2>🛡️ Class Selection</h2>
+<p class="small">Choose a class. Scroll over this bar to browse more classes.</p>
+<p>Equipped: <strong id="equippedClass">None</strong></p>
+<div id="classScrollHint">Use the arrows, mouse wheel, Shift + wheel, or the scrollbar to browse every class →</div>
+<div id="classScroller">
+<button class="class-nav" id="classPrev" aria-label="Scroll classes left">◀</button>
+<div id="classes"></div>
+<button class="class-nav" id="classNext" aria-label="Scroll classes right">▶</button>
+</div>
+</section>
+
+<section class="panel" id="specialPathsPanel">
+<h2>🌿 Class Specialization Paths</h2>
+<p class="small" id="specialPathHint">Equip a class to view its three specialization trees. Activate one path per class and spend Prestige Stars to unlock its nodes.</p>
+<div id="specialPathsContent"></div>
+</section>
+
+<section id="globalLeaderboard" class="panel">
+<h2>🌎 Global Leaderboard</h2>
+<p class="small">Ranks players by lifetime coins. Players who use the Jaximum or Dev panel are excluded.</p>
+<p id="leaderboardStatus">Connecting to leaderboard server...</p>
+<div class="leaderboard-wrap">
+<table id="leaderboardTable">
+<thead><tr><th>#</th><th>Player</th><th>Lifetime Coins</th><th>Prestige</th></tr></thead>
+<tbody id="leaderboardRows"><tr><td colspan="4">Loading leaderboard...</td></tr></tbody>
+</table>
+</div>
+<button id="refreshLeaderboardButton" type="button">🔄 Refresh Leaderboard</button>
+</section>
+
+<section id="jaximumPanel" class="panel hidden" style="max-width:1200px;margin:20px auto">
+<h2>🎮 JAXIMUM CONTROL CENTER</h2>
+<p>Secret controls are available while your player name is <b>jaximum</b>.</p>
+<div class="admin-section">
+<h3>💰 Set Player Stats</h3>
+<div class="admin-grid">
+<div><label for="adminCoins">Current coins</label><input id="adminCoins" type="number" min="0"></div>
+<div><label for="adminLifetime">Lifetime coins</label><input id="adminLifetime" type="number" min="0"></div>
+<div><label for="adminClicks">Total clicks</label><input id="adminClicks" type="number" min="0"></div>
+<div><label for="adminStars">Unspent stars</label><input id="adminStars" type="number" min="0"></div>
+<div><label for="adminTotalStars">Total stars earned</label><input id="adminTotalStars" type="number" min="0"></div>
+<div><label for="adminPrestige">Prestige level</label><input id="adminPrestige" type="number" min="0"></div>
+</div>
+<button id="applyStatsButton">Apply Player Stats</button>
+<button id="maxStatsButton">Set Stats to Huge Values</button>
+</div>
+<div class="admin-section">
+<h3>🛠️ Edit Any Upgrade</h3>
+<label for="adminUpgrade">Choose upgrade</label><select id="adminUpgrade"></select>
+<div class="admin-grid">
+<div><label for="adminLevel">Upgrade level</label><input id="adminLevel" type="number" min="0"></div>
+<div><label for="adminAmount">Amount per level</label><input id="adminAmount" type="number" min="0"></div>
+<div><label for="adminBase">Base price</label><input id="adminBase" type="number" min="0"></div>
+</div>
+<button id="applyUpgradeButton">Apply Upgrade Settings</button>
+<button id="maxUpgradeButton">Max Selected Upgrade</button>
+<button id="maxAllUpgradesButton">Max All Upgrades</button>
+</div>
+<div class="admin-section">
+<h3>🌟 Class and Skill Controls</h3>
+<div class="admin-grid">
+<div><label for="adminClass">Choose class</label><select id="adminClass"></select></div>
+<div><label for="adminSkill">Choose skill</label><select id="adminSkill"></select></div>
+<div><label for="adminSkillRank">Skill rank</label><input id="adminSkillRank" type="number" min="0"></div>
+</div>
+<button id="unlockClassesButton">Unlock All Classes</button>
+<button id="equipAdminClassButton">Equip Selected Class</button>
+<button id="applySkillButton">Set Skill Rank</button>
+</div>
+<div class="admin-section">
+<h3>⚡ Quick Actions</h3>
+<button id="adminAddCoins">Add 1 Billion Coins</button>
+<button id="adminAddStars">Add 1,000 Stars</button>
+<button id="adminSave">Save Now</button>
+</div>
+<p id="adminStatus"></p>
+</section>
+
+<footer>
+Coin Craze · Progress saves automatically in this browser.<br>
+<button id="saveButton">💾 Save Now</button>
+<button id="resetButton" style="background:#e66b76">Reset Game</button>
+</footer>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+
+const upgradeData=[
+{id:"finger",name:"Iron Finger",emoji:"👆",desc:"+1 coin per click",base:15,type:"click",amount:1},
+{id:"glove",name:"Power Glove",emoji:"🧤",desc:"+5 coins per click",base:100,type:"click",amount:5},
+{id:"robot",name:"Auto Clicker",emoji:"🤖",desc:"+1 coin per second",base:50,type:"auto",amount:1},
+{id:"miner",name:"Coin Miner",emoji:"⛏️",desc:"+8 coins per second",base:300,type:"auto",amount:8},
+{id:"factory",name:"Coin Factory",emoji:"🏭",desc:"+50 coins per second",base:2000,type:"auto",amount:50},
+{id:"bank",name:"Golden Bank",emoji:"🏦",desc:"+250 coins per second",base:12000,type:"auto",amount:250},
+{id:"multiplier",name:"Lucky Charm",emoji:"🍀",desc:"+25% income per level",base:1000,type:"mult",amount:.25},
+{id:"crystal",name:"Crystal Coin",emoji:"💎",desc:"+100 coins per click",base:5000,type:"click",amount:100},
+{id:"portal",name:"Money Portal",emoji:"🌀",desc:"+1,500 coins per second",base:60000,type:"auto",amount:1500},
+{id:"dragon",name:"Golden Dragon",emoji:"🐉",desc:"+10,000 coins per second",base:500000,type:"auto",amount:10000},
+{id:"moon",name:"Moon Mint",emoji:"🌙",desc:"+75,000 coins per second",base:2500000,type:"auto",amount:75000},
+{id:"starforge",name:"Star Forge",emoji:"🌟",desc:"+500,000 coins per second",base:15000000,type:"auto",amount:500000},
+{id:"goldenTouch",name:"Golden Touch",emoji:"🪙",desc:"+500 coins per click",base:250000,type:"click",amount:500},
+{id:"quantum",name:"Quantum Engine",emoji:"⚛️",desc:"+2,500,000 coins per second",base:100000000,type:"auto",amount:2500000}
+];
+
+const classData=[
+{id:"warrior",name:"WARRIOR",icon:"⚔️",stars:0,prestige:0,desc:"A balanced fighter.",click:1.5,income:1},
+{id:"mage",name:"MAGE",icon:"🧙",stars:5,prestige:0,desc:"Magic boosts all income.",click:1.2,income:1.5},
+{id:"merchant",name:"MERCHANT",icon:"💰",stars:10,prestige:0,desc:"A master of coin production.",click:1,income:2},
+{id:"ranger",name:"RANGER",icon:"🏹",stars:15,prestige:1,desc:"Swift and powerful clicks.",click:2,income:1.2},
+{id:"engineer",name:"ENGINEER",icon:"⚙️",stars:25,prestige:1,desc:"Specializes in automatic income.",click:1.2,income:2.5},
+{id:"assassin",name:"ASSASSIN",icon:"🗡️",stars:40,prestige:2,desc:"Strong critical clicks.",click:2.5,income:1.3},
+{id:"necromancer",name:"NECROMANCER",icon:"💀",stars:60,prestige:3,desc:"Dark magic boosts production.",click:2,income:2},
+{id:"paladin",name:"PALADIN",icon:"🛡️",stars:100,prestige:4,desc:"A powerful all-round class.",click:2.5,income:2.5},
+{id:"chronomancer",name:"CHRONOMANCER",icon:"⌛",stars:150,prestige:5,desc:"Bends time to improve income.",click:3,income:3},
+{id:"dragonknight",name:"DRAGON KNIGHT",icon:"🐉",stars:250,prestige:6,desc:"Draconic production bonuses.",click:4,income:3},
+{id:"alchemist",name:"ALCHEMIST",icon:"⚗️",stars:400,prestige:7,desc:"Transforms clicks into wealth.",click:3.5,income:4},
+{id:"celestial",name:"CELESTIAL",icon:"🌌",stars:700,prestige:9,desc:"Cosmic power multiplies everything.",click:5,income:5},
+{id:"masterClicks",name:"MASTER OF CLICKS",icon:"👑",stars:1e30,prestige:12,clicks:1e30,desc:"The ultimate clicker class.",click:10,income:10},
+{id:"gamer",name:"GAMER",icon:"🎮",stars:0,prestige:0,desc:"Secret class reserved for jaximum.",click:5,income:5,secret:true}
+];
+
+// Every class has three distinct specialization paths. Each path has three sequential nodes.
+const specialPathCatalog={
+warrior:[{id:"berserker",name:"Berserker",icon:"🔥",type:"click",desc:"Turn every click into a crushing strike."},{id:"warlord",name:"Warlord",icon:"👑",type:"all",desc:"Lead your empire with stronger overall income."},{id:"raider",name:"Raider",icon:"⚔️",type:"income",desc:"Build a steady stream of automatic coins."}],
+mage:[{id:"archmage",name:"Archmage",icon:"🔮",type:"click",desc:"Amplify the power of your magical clicks."},{id:"summoner",name:"Summoner",icon:"🪄",type:"income",desc:"Summon helpers that generate coins over time."},{id:"astralSage",name:"Astral Sage",icon:"🌠",type:"all",desc:"Use cosmic knowledge to boost all income."}],
+merchant:[{id:"tycoon",name:"Tycoon",icon:"💎",type:"all",desc:"Improve every part of your coin empire."},{id:"industrialist",name:"Industrialist",icon:"🏭",type:"income",desc:"Make automatic production more powerful."},{id:"broker",name:"Broker",icon:"📈",type:"discount",desc:"Negotiate lower prices on every upgrade."}],
+ranger:[{id:"sharpshooter",name:"Sharpshooter",icon:"🎯",type:"click",desc:"Make every shot count for more coins."},{id:"beastmaster",name:"Beastmaster",icon:"🐺",type:"income",desc:"Your companions bring in coins automatically."},{id:"pathfinder",name:"Pathfinder",icon:"🧭",type:"all",desc:"Find efficient routes to greater wealth."}],
+engineer:[{id:"inventor",name:"Inventor",icon:"🛠️",type:"click",desc:"Build gadgets that supercharge clicks."},{id:"factoryChief",name:"Factory Chief",icon:"🏗️",type:"income",desc:"Optimize your automated production lines."},{id:"overclocker",name:"Overclocker",icon:"⚡",type:"all",desc:"Push every machine and income source further."}],
+assassin:[{id:"shadowblade",name:"Shadowblade",icon:"🌑",type:"click",desc:"Strike swiftly for more coins per click."},{id:"nightStalker",name:"Night Stalker",icon:"🌙",type:"income",desc:"Let your hidden network earn while you wait."},{id:"poisoner",name:"Poisoner",icon:"☠️",type:"all",desc:"Apply a lasting boost to all coin gains."}],
+necromancer:[{id:"soulReaper",name:"Soul Reaper",icon:"💀",type:"click",desc:"Harvest extra coins with every click."},{id:"undeadLegion",name:"Undead Legion",icon:"🧟",type:"income",desc:"Raise a legion that produces coins endlessly."},{id:"lichLord",name:"Lich Lord",icon:"🕯️",type:"all",desc:"Master dark magic to boost every income source."}],
+paladin:[{id:"holyAvenger",name:"Holy Avenger",icon:"✨",type:"click",desc:"Channel holy power into stronger clicks."},{id:"guardian",name:"Guardian",icon:"🛡️",type:"income",desc:"Protect a steady flow of automatic income."},{id:"saint",name:"Saint",icon:"🌟",type:"all",desc:"Bless all your coin gains."}],
+chronomancer:[{id:"timeStriker",name:"Time Striker",icon:"⏳",type:"click",desc:"Compress time into powerful clicks."},{id:"timeLoop",name:"Time Loop",icon:"🔁",type:"income",desc:"Repeat production cycles for automatic wealth."},{id:"timeLord",name:"Time Lord",icon:"⌛",type:"all",desc:"Bend every income source to your will."}],
+dragonknight:[{id:"flameRider",name:"Flame Rider",icon:"🔥",type:"click",desc:"Infuse clicks with dragonfire."},{id:"dragonHoard",name:"Dragon Hoard",icon:"🐲",type:"income",desc:"Let your dragon's hoard grow by itself."},{id:"elderDrake",name:"Elder Drake",icon:"🐉",type:"all",desc:"Awaken ancient power to boost all income."}],
+alchemist:[{id:"transmuter",name:"Transmuter",icon:"⚗️",type:"click",desc:"Transmute every click into greater value."},{id:"homunculusMaker",name:"Homunculus Maker",icon:"🧪",type:"income",desc:"Create helpers that generate coins over time."},{id:"grandAlchemist",name:"Grand Alchemist",icon:"🌟",type:"all",desc:"Perfect the formula for all income."}],
+celestial:[{id:"starcaller",name:"Starcaller",icon:"🌠",type:"click",desc:"Call down stellar power with every click."},{id:"galaxyWeaver",name:"Galaxy Weaver",icon:"🌌",type:"income",desc:"Weave galaxies that produce endless wealth."},{id:"cosmicDeity",name:"Cosmic Deity",icon:"☄️",type:"all",desc:"Use cosmic might to increase every gain."}],
+masterClicks:[{id:"clickTitan",name:"Click Titan",icon:"👆",type:"click",desc:"Reach the ultimate level of click power."},{id:"comboKing",name:"Combo King",icon:"👑",type:"income",desc:"Turn every combo into a passive coin engine."},{id:"omniClicker",name:"Omni Clicker",icon:"♾️",type:"all",desc:"Master clicks and passive income together."}],
+gamer:[{id:"speedrunner",name:"Speedrunner",icon:"🏁",type:"click",desc:"Break records with faster, stronger clicks."},{id:"idleLegend",name:"Idle Legend",icon:"🎮",type:"income",desc:"Earn while the game runs on autopilot."},{id:"glitchMaster",name:"Glitch Master",icon:"🌀",type:"all",desc:"Bend the game rules to boost all gains."}]
+};
+const specialNodeCosts=[2,4,7];
+function specialPathKey(classId,pathId){return classId+":"+pathId}
+function specialPathNodes(path){
+const values=path.type==="click"?[.10,.15,.20]:path.type==="income"?[.10,.15,.20]:path.type==="all"?[.07,.10,.13]:[.03,.04,.05];
+return values.map((value,i)=>({name:["Novice","Adept","Master"][i],cost:specialNodeCosts[i],value}));
+}
+function activeSpecialPath(){
+const c=selectedClass();if(!c)return null;
+const pathId=(state.activeSpecialPaths||{})[c.id];
+return(specialPathCatalog[c.id]||[]).find(p=>p.id===pathId)||null;
+}
+function specialPathRank(path){return Number((state.specialPaths||{})[specialPathKey(state.playerClass,path.id)]||0)}
+function specialPathBonus(kind){
+const path=activeSpecialPath();if(!path)return 0;
+const rank=specialPathRank(path);let total=0;
+for(let i=0;i<rank;i++){
+const node=specialPathNodes(path)[i];
+if(path.type===kind)total+=node.value;
+}
+return total;
+}
+
+const skillData=[
+{id:"strongHands",name:"💪 Strong Hands",desc:"+25% click power per rank",cost:1,max:10},
+{id:"deepMines",name:"⛏️ Deep Mines",desc:"+25% automatic income per rank",cost:1,max:10},
+{id:"goldRush",name:"🌟 Golden Rush",desc:"+5% golden click chance per rank",cost:2,max:5},
+{id:"starInterest",name:"✨ Star Interest",desc:"+10% all income per rank",cost:3,max:10},
+{id:"cheapShop",name:"🏷️ Discount Deal",desc:"Upgrade prices -5% per rank",cost:2,max:10}
+];
+const achievementData=[
+{id:"first",text:"🪙 First Coin — Earn 1 coin",test:s=>s.lifetime>=1},
+{id:"hundred",text:"💯 Getting Started — Earn 100 coins",test:s=>s.lifetime>=100},
+{id:"thousand",text:"💰 Coin Collector — Earn 1,000 coins",test:s=>s.lifetime>=1000},
+{id:"million",text:"👑 Millionaire — Earn 1,000,000 coins",test:s=>s.lifetime>=1e6},
+{id:"clicks",text:"👆 Click Machine — Click 100 times",test:s=>s.clicks>=100},
+{id:"builder",text:"🏭 Tycoon — Own 10 upgrade levels",test:s=>totalLevels()>=10},
+{id:"prestige",text:"✨ Reborn — Prestige for the first time",test:s=>s.prestigeCount>=1}
+];
+function freshState(){return{coins:0,lifetime:0,clicks:0,stars:0,totalStars:0,prestigeCount:0,levels:{},achievements:[],tree:{},playerClass:"",unlockedClasses:[],potions:[],specialPaths:{},activeSpecialPaths:{},dailyClaimDay:"",luckyMode:false,burstUntil:0,burstReadyAt:0}}
+let state=freshState(),buyAmount=1;
+let currentPage="main";
+const potionData=[
+{id:"might",name:"Potion of Might",icon:"💪",desc:"Permanently increases coin-click power by 25%.",cost:50000,effect:"+25% click power",click:1.25},
+{id:"prosperity",name:"Potion of Prosperity",icon:"💰",desc:"Permanently increases automatic coin income by 25%.",cost:125000,effect:"+25% automatic income",income:1.25},
+{id:"fortune",name:"Potion of Fortune",icon:"🍀",desc:"Permanently increases your chance of a golden click by 5 percentage points.",cost:250000,effect:"+5% golden click chance",crit:.05},
+{id:"discount",name:"Potion of Frugality",icon:"🏷️",desc:"Permanently makes every upgrade 10% cheaper.",cost:500000,effect:"10% cheaper upgrades",discount:.10},
+{id:"alchemy",name:"Grand Alchemist's Elixir",icon:"🌟",desc:"A rare brew that permanently increases both click power and automatic income by 50%.",cost:2000000,effect:"+50% click power and automatic income",click:1.5,income:1.5}
+];
+const playerNameInput=$("playerName");
+function isJaximum(){return playerNameInput.value.trim().toLowerCase()==="jaximum"}
+function hasAdminAccess(){const n=playerNameInput.value.trim().toLowerCase();return n==="jaximum"||n==="dev"}
+
+// Persistent player ID used by the modern leaderboard server.
+function getPlayerID(){
+ let id="";
+ try{id=localStorage.getItem("coinCrazePlayerID")||""}catch(e){}
+ if(!/^CC-[A-F0-9]{8}$/.test(id)){
+  let randomID;
+  if(window.crypto&&typeof window.crypto.getRandomValues==="function"){
+   randomID=Array.from(window.crypto.getRandomValues(new Uint8Array(4)),b=>b.toString(16).padStart(2,"0")).join("").toUpperCase();
+  }else{randomID=Math.random().toString(16).slice(2,10).toUpperCase().padEnd(8,"0")}
+  id="CC-"+randomID;
+  try{localStorage.setItem("coinCrazePlayerID",id)}catch(e){}
+ }
+ return id;
+}
+function markPanelUsed(panel){
+ const key=panel==="jaximum"?"coinCrazeUsedJaximumPanel":"coinCrazeUsedDevPanel";
+ try{localStorage.setItem(key,"true")}catch(e){}
+ displayPlayerID();
+}
+function displayPlayerID(){
+ const id=getPlayerID();
+ let usedJaximum=false,usedDev=false;
+ try{
+  usedJaximum=localStorage.getItem("coinCrazeUsedJaximumPanel")==="true";
+  usedDev=localStorage.getItem("coinCrazeUsedDevPanel")==="true";
+ }catch(e){}
+ const suffixes=[];
+ if(usedJaximum)suffixes.push("JAXIMUM");
+ if(usedDev)suffixes.push("DEV");
+ const fullID=id+(suffixes.length?"-"+suffixes.join("-"):"");
+ const idElement=$("playerID"),statusElement=$("playerIDStatus");
+ if(idElement)idElement.textContent=fullID;
+ if(statusElement){
+  if(usedJaximum&&usedDev)statusElement.textContent="⚠ JAXIMUM and DEV panels used";
+  else if(usedJaximum)statusElement.textContent="⚠ JAXIMUM panel used";
+  else if(usedDev)statusElement.textContent="⚠ DEV panel used";
+  else statusElement.textContent="Standard player";
+ }
+ return fullID;
+}
+
+const LEADERBOARD_API_BASE = "";
+let leaderboardRequestBusy = false;
+let onlinePlayerId = "";
+let onlineApiMode = "";
+
+try {
+  onlinePlayerId = localStorage.getItem("coinCrazeOnlinePlayerId") || "";
+} catch (e) {}
+
+if (onlinePlayerId) {
+  onlineApiMode = /^CC-[A-F0-9]{8}$/i.test(onlinePlayerId) ? "modern" : "legacy";
+}
+
+function panelUseFlags() {
+  let usedJaximumPanel = false;
+  let usedDevPanel = false;
+  try {
+    usedJaximumPanel = localStorage.getItem("coinCrazeUsedJaximumPanel") === "true";
+    usedDevPanel = localStorage.getItem("coinCrazeUsedDevPanel") === "true";
+  } catch (e) {}
+  return {
+    usedJaximumPanel,
+    usedDevPanel,
+    usedAdminPanel: usedJaximumPanel || usedDevPanel
+  };
+}
+
+function leaderboardPlayerID() {
+  return onlinePlayerId || getPlayerID();
+}
+
+function leaderboardFormat(value) {
+  const n = Number(value || 0);
+  if (!Number.isFinite(n)) return "∞";
+  if (Math.abs(n) < 1000) return Math.floor(n).toLocaleString();
+  const units = ["K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"];
+  let v = n, i = -1;
+  while (Math.abs(v) >= 1000 && i < units.length - 1) { v /= 1000; i++; }
+  return v.toFixed(2) + units[i];
+}
+
+async function ensureLeaderboardPlayer() {
+  if (onlinePlayerId) return onlinePlayerId;
+
+  const name = (playerNameInput.value.trim() || "Player").slice(0, 24);
+
+  // Try the older registration endpoint first.
+  try {
+    const response = await fetch(LEADERBOARD_API_BASE + "/api/player/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name })
+    });
+    const result = await response.json().catch(() => ({}));
+    const player = result.player || result;
+    const id = player.id || result.id || player.playerId || result.playerId || "";
+    if (response.ok && id) {
+      onlinePlayerId = String(id);
+      onlineApiMode = "legacy";
+      localStorage.setItem("coinCrazeOnlinePlayerId", onlinePlayerId);
+      return onlinePlayerId;
+    }
+  } catch (e) {
+    // Fall back to the modern API format.
+  }
+
+  onlinePlayerId = getPlayerID();
+  onlineApiMode = "modern";
+  try { localStorage.setItem("coinCrazeOnlinePlayerId", onlinePlayerId); } catch (e) {}
+  return onlinePlayerId;
+}
+
+function normalizeLeaderboardResponse(data) {
+  if (Array.isArray(data)) return data;
+  if (data && Array.isArray(data.players)) return data.players;
+  if (data && Array.isArray(data.leaderboard)) return data.leaderboard;
+  if (data && Array.isArray(data.data)) return data.data;
+  return [];
+}
+
+async function refreshLeaderboard() {
+  const status = $("leaderboardStatus");
+  const rows = $("leaderboardRows");
+
+  try {
+    const response = await fetch(LEADERBOARD_API_BASE + "/api/leaderboard", { cache: "no-store" });
+    if (!response.ok) throw new Error("Server returned " + response.status);
+
+    const data = await response.json();
+    const players = normalizeLeaderboardResponse(data);
+
+    players.sort((a, b) =>
+      Number(b.lifetimeCoins ?? b.lifetime ?? 0) - Number(a.lifetimeCoins ?? a.lifetime ?? 0)
+    );
+
+    rows.innerHTML = "";
+
+    if (!players.length) {
+      rows.innerHTML = '<tr><td colspan="4">No eligible scores yet. Be the first!</td></tr>';
+    } else {
+      players.slice(0, 50).forEach((player, index) => {
+        const tr = document.createElement("tr");
+        const id = player.playerId || player.id || "";
+        if (id && id === leaderboardPlayerID()) tr.className = "me";
+
+        const lifetime = player.lifetimeCoins ?? player.lifetime ?? player.score ?? 0;
+        const prestige = player.prestige ?? player.prestigeCount ?? 0;
+
+        [
+          index + 1,
+          player.name || "Player",
+          leaderboardFormat(lifetime),
+          Number(prestige || 0).toLocaleString()
+        ].forEach(value => {
+          const td = document.createElement("td");
+          td.textContent = String(value);
+          tr.appendChild(td);
+        });
+
+        rows.appendChild(tr);
+      });
+    }
+
+    status.textContent =
+      "Connected · Updated " + new Date().toLocaleTimeString() +
+      " · " + players.length + " player(s)";
+  } catch (error) {
+    status.textContent = "Leaderboard connection failed: " + error.message;
+    rows.innerHTML =
+      '<tr><td colspan="4">Could not load leaderboard. Make sure the game is opened through your Node server.</td></tr>';
+  }
+}
+
+async function submitLeaderboardScore() {
+  if (leaderboardRequestBusy) return;
+  leaderboardRequestBusy = true;
+
+  try {
+    const id = await ensureLeaderboardPlayer();
+    const name = (playerNameInput.value.trim() || "Player").slice(0, 24);
+
+    const response = await fetch(LEADERBOARD_API_BASE + "/api/score", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(onlineApiMode === "legacy" ? {
+        id,
+        name,
+        lifetimeCoins: Math.floor(Math.max(0, Number(state.lifetime) || 0))
+      } : {
+        playerId: id,
+        displayId: displayPlayerID(),
+        name,
+        lifetime: Math.floor(Math.max(0, Number(state.lifetime) || 0)),
+        coins: Math.floor(Math.max(0, Number(state.coins) || 0)),
+        stars: Math.floor(Math.max(0, Number(state.stars) || 0)),
+        prestige: Math.floor(Math.max(0, Number(state.prestigeCount) || 0)),
+        playerClass: String(state.playerClass || ""),
+        ...panelUseFlags()
+      })
+    });
+
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.error || "Score submission failed");
+
+    if (result.excluded) {
+      $("leaderboardStatus").textContent =
+        "This player ID is excluded because an admin panel was used.";
+    } else {
+      await refreshLeaderboard();
+    }
+  } catch (error) {
+    $("leaderboardStatus").textContent = "Score sync failed: " + error.message;
+  } finally {
+    leaderboardRequestBusy = false;
+  }
+}
+
+async function updateLeaderboardName() {
+  const name = (playerNameInput.value.trim() || "Player").slice(0, 24);
+
+  try { localStorage.setItem("coinCrazePlayerName", name); } catch (e) {}
+
+  try {
+    const id = await ensureLeaderboardPlayer();
+
+    if (onlineApiMode === "legacy") {
+      const response = await fetch(LEADERBOARD_API_BASE + "/api/player/name", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, name })
+      });
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || "Name update failed");
+    }
+
+    await submitLeaderboardScore();
+  } catch (error) {
+    $("leaderboardStatus").textContent = "Name/score sync failed: " + error.message;
+  }
+}
+
+function safeNumber(v,min=0){const n=Number(v);return Number.isFinite(n)?Math.max(min,n):min}
+function format(n){
+if(!Number.isFinite(n))return"∞";
+if(Math.abs(n)<1000)return Number(n.toFixed(1)).toLocaleString();
+const units=["K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc"];let i=-1;
+while(Math.abs(n)>=1000&&i<units.length-1){n/=1000;i++}
+return n.toFixed(2)+units[i];
+}
+function level(id){return Number(state.levels[id]||0)}
+function skillRank(id){return Number(state.tree[id]||0)}
+function totalLevels(){return Object.values(state.levels).reduce((s,n)=>s+(Number(n)||0),0)}
+function selectedClass(){return classData.find(c=>c.id===state.playerClass)||null}
+function classUnlocked(c){
+if(c.secret&&!isJaximum())return false;
+return state.unlockedClasses.includes(c.id)||(state.stars>=c.stars&&state.prestigeCount>=c.prestige&&(!c.clicks||state.clicks>=c.clicks));
+}
+function refreshUnlockedClasses(){
+for(const c of classData)if((!c.secret||isJaximum())&&classUnlocked(c)&&!state.unlockedClasses.includes(c.id))state.unlockedClasses.push(c.id);
+if(!isJaximum()&&state.playerClass==="gamer")state.playerClass="";
+}
+function potionOwned(id){return (state.potions||[]).includes(id)}
+function potionMultiplier(kind){return potionData.filter(p=>potionOwned(p.id)&&p[kind]).reduce((n,p)=>n*p[kind],1)}
+function price(item){return Math.max(1,Math.floor(item.base*Math.pow(1.16,level(item.id))*Math.max(.25,1-skillRank("cheapShop")*.05-(potionOwned("discount")?.10:0)-specialPathBonus("discount"))))}
+function multiplier(){
+const c=selectedClass();
+return(1+level("multiplier")*.25)*(1+state.stars*.25)*(1+skillRank("starInterest")*.10)*(Date.now()<state.burstUntil?2:1);
+}
+function clickPower(){
+const c=selectedClass();let base=1;
+for(const item of upgradeData)if(item.type==="click")base+=level(item.id)*item.amount;
+return base*multiplier()*(1+skillRank("strongHands")*.25)*(1+specialPathBonus("click"))*(1+specialPathBonus("all"))*(c?c.click:1)*potionMultiplier("click");
+}
+function coinsPerSecond(){
+let base=0;for(const item of upgradeData)if(item.type==="auto")base+=level(item.id)*item.amount;
+const c=selectedClass();
+return base*multiplier()*(1+skillRank("deepMines")*.25)*(1+specialPathBonus("income"))*(1+specialPathBonus("all"))*(c?c.income:1)*potionMultiplier("income");
+}
+function earn(n){if(Number.isFinite(n)&&n>=0){state.coins+=n;state.lifetime+=n}}
+function showMessage(t){$("message").textContent=t}
+function saveQuietly(){try{localStorage.setItem("coinCrazeAdvancedSave",JSON.stringify(state))}catch(e){}}
+function saveGame(){saveQuietly();showMessage("Progress saved! 💾")}
+function loadGame(){
+try{
+const saved=localStorage.getItem("coinCrazeAdvancedSave");
+if(saved){state={...freshState(),...JSON.parse(saved)};state.levels=state.levels||{};state.tree=state.tree||{};state.achievements=state.achievements||[];state.unlockedClasses=state.unlockedClasses||[];state.potions=state.potions||[];state.specialPaths=state.specialPaths||{};state.activeSpecialPaths=state.activeSpecialPaths||{}}
+}catch(e){}
+}
+function clickCoin(){
+const chance=Math.min(.75,.05+skillRank("goldRush")*.05+(state.luckyMode?.10:0)+(potionOwned("fortune")?.05:0));
+const critical=Math.random()<chance,amount=clickPower()*(critical?5:1);
+earn(amount);state.clicks++;
+showMessage(critical?"✨ GOLDEN CLICK! 5× coins!":`+${format(amount)} coins!`);
+update();
+}
+function buyUpgrade(id,amount=buyAmount){
+const item=upgradeData.find(u=>u.id===id);if(!item)return;
+let bought=0;amount=Math.min(10000,Math.max(1,Math.floor(amount)));
+for(let i=0;i<amount;i++){const cost=price(item);if(state.coins<cost)break;state.coins-=cost;state.levels[id]=level(id)+1;bought++}
+if(bought)showMessage(`${item.name}: bought ${bought} level(s)!`);
+update();saveQuietly();
+}
+function buyAllAffordable(){
+let bought=0;
+for(const item of upgradeData){let guard=0;while(state.coins>=price(item)&&guard<1000){state.coins-=price(item);state.levels[item.id]=level(item.id)+1;bought++;guard++}}
+showMessage(bought?`Bought ${bought} upgrade levels!`:"Not enough coins for upgrades.");update();saveQuietly();
+}
+function buySkill(id){
+const s=skillData.find(x=>x.id===id);if(!s)return;
+const rank=skillRank(id);if(rank>=s.max||state.stars<s.cost)return;
+state.stars-=s.cost;state.tree[id]=rank+1;showMessage(`${s.name} upgraded!`);update();saveQuietly();
+}
+function equipClass(id){
+const c=classData.find(x=>x.id===id);if(!c||!classUnlocked(c))return;
+state.playerClass=id;showMessage(`${c.name} equipped!`);if(id!=="alchemist"&&currentPage==="alchemy")showMainPage();update();saveQuietly();
+}
+function rebirth(){
+const gain=Math.max(0,Math.floor(state.lifetime/100000)-state.totalStars);
+if(gain<=0){showMessage("Earn more lifetime coins to gain a prestige star!");return}
+if(!confirm(`Prestige for ${format(gain)} star(s)? Coins and upgrades reset, but stars, classes and skills remain.`))return;
+state.stars+=gain;state.totalStars+=gain;state.prestigeCount++;state.coins=0;state.levels={};state.achievements=[];
+showMessage(`Prestige complete! +${format(gain)} stars!`);update();saveQuietly();
+}
+function activateBurst(){
+const now=Date.now();
+if(now<state.burstReadyAt){showMessage(`Burst ready in ${Math.ceil((state.burstReadyAt-now)/1000)}s.`);return}
+state.burstUntil=now+10000;state.burstReadyAt=now+60000;
+showMessage("⚡ Coin Burst: 2× income for 10 seconds!");update();saveQuietly();
+}
+function checkAchievements(){
+for(const a of achievementData)if(a.test(state)&&!state.achievements.includes(a.id)){state.achievements.push(a.id);showMessage("Achievement unlocked: "+a.text)}
+}
+function renderUpgrades(){
+$("upgrades").innerHTML=upgradeData.map(item=>{
+const cost=price(item),lv=level(item.id);
+return`<div class="upgrade"><div class="emoji">${item.emoji}</div><div class="info"><h3>${item.name} <span class="small">Lv. ${format(lv)}</span></h3><p>${item.desc}</p><p>Cost: ${format(cost)} coins</p></div><button data-buy="${item.id}" ${state.coins<cost?"disabled":""}>BUY</button></div>`;
+}).join("");
+document.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>buyUpgrade(b.dataset.buy));
+}
+function renderClasses(){
+refreshUnlockedClasses();
+const visible=classData.filter(c=>!c.secret||isJaximum());
+$("classes").innerHTML=visible.map(c=>{
+const owned=classUnlocked(c),selected=state.playerClass===c.id;
+const req=c.secret?"Secret Jaximum class":`Requires ${format(c.stars)} stars · Prestige ${c.prestige}`+(c.clicks?` · ${format(c.clicks)} clicks`:"");
+return`<div class="class-card ${selected?"selected":""} ${owned?"":"locked"}"><div class="class-icon">${c.icon}</div><h3>${c.name}</h3><p>${c.desc}</p><p>Click ×${format(c.click)} · Income ×${format(c.income)}</p><p>${owned?"Unlocked":req}</p><button data-class="${c.id}" ${owned?"":"disabled"}>${selected?"EQUIPPED":owned?"EQUIP":"LOCKED"}</button></div>`;
+}).join("");
+document.querySelectorAll("[data-class]").forEach(b=>b.onclick=()=>equipClass(b.dataset.class));
+$("equippedClass").textContent=selectedClass()?selectedClass().name:"None";
+}
+function renderSkills(){
+$("treeStars").textContent=format(state.stars);
+$("skillTree").innerHTML=skillData.map(s=>{
+const rank=skillRank(s.id),max=rank>=s.max,canBuy=!max&&state.stars>=s.cost;
+return`<div class="tree-node ${rank?"owned":""}"><h3>${s.name} <span class="small">${rank}/${s.max}</span></h3><p>${s.desc}</p><p>Cost: ${s.cost} star(s)</p><button data-skill="${s.id}" ${canBuy?"":"disabled"}>${max?"MAXED":"UPGRADE"}</button></div>`;
+}).join("");
+document.querySelectorAll("[data-skill]").forEach(b=>b.onclick=()=>buySkill(b.dataset.skill));
+}
+function activateSpecialPath(pathId){
+const c=selectedClass();if(!c)return;
+const paths=specialPathCatalog[c.id]||[];const path=paths.find(p=>p.id===pathId);if(!path)return;
+state.activeSpecialPaths=state.activeSpecialPaths||{};state.activeSpecialPaths[c.id]=path.id;
+showMessage(`${path.name} path activated for ${c.name}!`);update();saveQuietly();
+}
+function buySpecialPathNode(pathId){
+const c=selectedClass();if(!c)return;
+const path=(specialPathCatalog[c.id]||[]).find(p=>p.id===pathId);if(!path)return;
+const key=specialPathKey(c.id,path.id);state.specialPaths=state.specialPaths||{};
+const rank=Number(state.specialPaths[key]||0);if(rank>=3){showMessage("This specialization path is fully unlocked!");return}
+const node=specialPathNodes(path)[rank];if(state.stars<node.cost){showMessage(`You need ${node.cost} Prestige Stars for this node.`);return}
+state.stars-=node.cost;state.specialPaths[key]=rank+1;
+if(!state.activeSpecialPaths)state.activeSpecialPaths={};
+if(!state.activeSpecialPaths[c.id])state.activeSpecialPaths[c.id]=path.id;
+showMessage(`${path.name}: ${node.name} node unlocked!`);update();saveQuietly();
+}
+function renderSpecialPaths(){
+const panel=$("specialPathsPanel"),content=$("specialPathsContent"),c=selectedClass();
+if(!c||!(specialPathCatalog[c.id]||[]).length){
+ panel.classList.remove("hidden");content.innerHTML='<div class="center" style="padding:18px"><div style="font-size:42px">🌿</div><h3>No specialization selected</h3><p class="small">Equip any class above to reveal its three unique paths.</p></div>';
+ return;
+}
+const paths=specialPathCatalog[c.id]||[];const activeId=(state.activeSpecialPaths||{})[c.id]||"";
+const unlockedNodes=Object.values(state.specialPaths||{}).reduce((sum,n)=>sum+(Number(n)||0),0);
+$("specialPathHint").textContent=`${c.name}: choose a path, then unlock its nodes in order for permanent class-specific bonuses. Each class remembers its own active path. Total nodes unlocked: ${unlockedNodes}.`;
+content.innerHTML=`<div class="special-path-grid">${paths.map(path=>{
+const key=specialPathKey(c.id,path.id),rank=Number((state.specialPaths||{})[key]||0),active=activeId===path.id,nodes=specialPathNodes(path);
+const typeLabel=path.type==="click"?"Click Power":path.type==="income"?"Automatic Income":path.type==="discount"?"Upgrade Discounts":"All Income";
+const nodeHtml=nodes.map((node,i)=>{
+const owned=rank>i,available=rank===i,bonus=path.type==="all"?`+${Math.round(node.value*100)}% click and automatic income`:path.type==="discount"?`${Math.round(node.value*100)}% lower upgrade prices`:`+${Math.round(node.value*100)}% ${path.type==="click"?"click power":"automatic income"}`;
+return `<div class="path-node ${owned?"owned":""}"><h4>${owned?"✓ ":""}${i+1}. ${node.name}</h4><p>${bonus} · Cost: ${node.cost} Prestige Stars</p>${owned?'<span class="node-status">UNLOCKED</span>':available?`<button data-special-buy="${path.id}" ${state.stars>=node.cost?"":"disabled"}>Unlock Node · ${node.cost} ⭐</button>`:'<span class="node-status">🔒 Unlock previous node first</span>'}</div>`;
+}).join("");
+return `<article class="special-path ${active?"active":""}"><h3>${path.icon} ${path.name}</h3><p class="path-desc">${path.desc}</p><p class="small">Focus: <strong>${typeLabel}</strong> · Nodes: ${rank}/3</p><div class="path-tree">${nodeHtml}</div><div class="path-actions"><button data-special-activate="${path.id}" ${active?"disabled":""}>${active?"✓ ACTIVE PATH":"ACTIVATE PATH"}</button></div></article>`;
+}).join("")}</div>`;
+content.querySelectorAll("[data-special-activate]").forEach(b=>b.onclick=()=>activateSpecialPath(b.dataset.specialActivate));
+content.querySelectorAll("[data-special-buy]").forEach(b=>b.onclick=()=>buySpecialPathNode(b.dataset.specialBuy));
+}
+function renderAchievements(){
+$("achievements").innerHTML=achievementData.map(a=>{
+const done=state.achievements.includes(a.id);
+return`<div class="${done?"unlocked":"locked"}">${done?"✓ ":"🔒 "}${a.text}</div>`;
+}).join("");
+}
+function update(){
+refreshUnlockedClasses();checkAchievements();
+$("coins").textContent=format(state.coins);
+$("power").textContent=format(clickPower());
+$("cps").textContent=format(coinsPerSecond());
+$("stars").textContent=format(state.stars);
+$("prestige").textContent=format(state.prestigeCount);
+const available=Math.max(0,Math.floor(state.lifetime/100000)-state.totalStars);
+$("rebirthInfo").textContent=`Lifetime coins: ${format(state.lifetime)} · Stars available: ${format(available)}`;
+$("rebirthProgress").style.width=`${Math.min(100,(state.lifetime%100000)/1000)}%`;
+$("buyModeButton").textContent=`Buy: ×${buyAmount}`;
+$("luckyButton").textContent=`🍀 Lucky Mode: ${state.luckyMode?"ON":"OFF"}`;
+$("burstButton").disabled=Date.now()<state.burstReadyAt;
+$("boostInfo").textContent=Date.now()<state.burstUntil?`Coin Burst active for ${Math.ceil((state.burstUntil-Date.now())/1000)} seconds!`:Date.now()<state.burstReadyAt?`Coin Burst cooldown: ${Math.ceil((state.burstReadyAt-Date.now())/1000)}s`:"Coin Burst gives 10 seconds of 2× income (60-second cooldown).";
+renderUpgrades();renderSkills();renderClasses();renderSpecialPaths();renderAchievements();
+$("alchemyPortal").classList.toggle("hidden",state.playerClass!=="alchemist"||currentPage==="alchemy");
+if(currentPage==="alchemy"&&state.playerClass!=="alchemist")showMainPage();
+if(currentPage==="alchemy")renderAlchemy();
+$("jaximumPanel").classList.toggle("hidden",!hasAdminAccess());
+document.body.classList.toggle("jaximum-theme",isJaximum());
+$("jaximumPanel").querySelector("h2").textContent=isJaximum()?"🎮 JAXIMUM CONTROL CENTER":"🛠️ DEV CONTROL CENTER";
+$("jaximumPanel").querySelector("p").innerHTML=isJaximum()?"Secret controls are available while your player name is <b>jaximum</b>.":"Developer controls are available while your player name is <b>dev</b>.";
+}
+function showAlchemyPage(){
+if(state.playerClass!=="alchemist"){showMessage("You must equip the Alchemist class to enter the potion lab.");return}
+currentPage="alchemy";
+$("mainGame").classList.add("hidden");
+$("classPanel").classList.add("hidden");
+$("alchemyPortal").classList.add("hidden");
+$("alchemyPage").classList.remove("hidden");
+$("jaximumPanel").classList.add("hidden");
+renderAlchemy();
+window.scrollTo({top:0,behavior:"smooth"});
+}
+function showMainPage(){
+currentPage="main";
+$("mainGame").classList.remove("hidden");
+$("classPanel").classList.remove("hidden");
+$("alchemyPage").classList.add("hidden");
+$("alchemyPortal").classList.toggle("hidden",state.playerClass!=="alchemist");
+$("jaximumPanel").classList.toggle("hidden",!hasAdminAccess());
+window.scrollTo({top:0,behavior:"smooth"});
+}
+function brewPotion(id){
+if(state.playerClass!=="alchemist"){showMessage("Equip Alchemist to brew potions.");showMainPage();return}
+const potion=potionData.find(p=>p.id===id);if(!potion||potionOwned(id))return;
+if(state.coins<potion.cost){alert(`You need ${format(potion.cost-state.coins)} more coins to brew this potion.`);return}
+state.coins-=potion.cost;
+state.potions.push(id);
+showMessage(`${potion.name} brewed! Its effect is permanent.`);
+renderAlchemy();update();saveQuietly();
+}
+function renderAlchemy(){
+if(!$("potionGrid"))return;
+$("alchemyCoins").textContent=format(state.coins);
+const owned=potionData.filter(p=>potionOwned(p.id));
+$("alchemyEffectList").innerHTML=owned.length?owned.map(p=>`<div class="unlocked">✓ ${p.icon} ${p.name}: ${p.effect}</div>`).join(""):"No potions brewed yet. Craft your first potion below!";
+$("potionGrid").innerHTML=potionData.map(p=>{
+const has=potionOwned(p.id),canBuy=state.coins>=p.cost;
+return `<div class="potion-card ${has?"potion-owned":""}"><div class="potion-icon">${p.icon}</div><h3>${p.name}</h3><p>${p.desc}</p><p><strong>Cost: ${format(p.cost)} coins</strong></p>${has?`<div class="owned-label">✓ BREWED — PERMANENT</div>`:`<button data-potion="${p.id}" ${canBuy?"":"disabled"}>${canBuy?"🧪 BREW POTION":"NOT ENOUGH COINS"}</button>`}</div>`;
+}).join("");
+document.querySelectorAll("[data-potion]").forEach(b=>b.onclick=()=>brewPotion(b.dataset.potion));
+}
+function refreshAdminOptions(){
+$("adminUpgrade").innerHTML=upgradeData.map(u=>`<option value="${u.id}">${u.emoji} ${u.name}</option>`).join("");
+$("adminClass").innerHTML=classData.map(c=>`<option value="${c.id}">${c.icon} ${c.name}</option>`).join("");
+$("adminSkill").innerHTML=skillData.map(s=>`<option value="${s.id}">${s.name}</option>`).join("");
+}
+function syncAdminStatsFields(){
+$("adminCoins").value=state.coins;$("adminLifetime").value=state.lifetime;
+$("adminClicks").value=state.clicks;$("adminStars").value=state.stars;
+$("adminTotalStars").value=state.totalStars;$("adminPrestige").value=state.prestigeCount;
+}
+function syncAdminUpgradeFields(){
+const item=upgradeData.find(u=>u.id===$("adminUpgrade").value)||upgradeData[0];
+$("adminLevel").value=level(item.id);$("adminAmount").value=item.amount;$("adminBase").value=item.base;
+}
+function syncAdminSkillField(){
+$("adminSkillRank").value=skillRank($("adminSkill").value||skillData[0].id);
+}
+function syncAdminFields(){
+syncAdminStatsFields();syncAdminUpgradeFields();syncAdminSkillField();
+}
+function requireJaximum(){return hasAdminAccess()}
+function adminStatus(t){$("adminStatus").textContent=t;update();syncAdminFields();saveQuietly()}
+function applyAdminStats(){
+if(!requireJaximum())return;
+state.coins=safeNumber($("adminCoins").value);state.lifetime=safeNumber($("adminLifetime").value);
+state.clicks=safeNumber($("adminClicks").value);state.stars=Math.floor(safeNumber($("adminStars").value));
+state.totalStars=Math.floor(safeNumber($("adminTotalStars").value));state.prestigeCount=Math.floor(safeNumber($("adminPrestige").value));
+adminStatus("Player stats updated!");
+}
+function applyAdminUpgrade(){
+if(!requireJaximum())return;
+const item=upgradeData.find(u=>u.id===$("adminUpgrade").value);if(!item)return;
+state.levels[item.id]=Math.floor(safeNumber($("adminLevel").value));
+item.amount=safeNumber($("adminAmount").value);item.base=safeNumber($("adminBase").value);
+adminStatus(`${item.name} settings updated!`);
+}
+function unlockAllClasses(){
+if(!requireJaximum())return;
+state.unlockedClasses=classData.filter(c=>!c.secret||isJaximum()).map(c=>c.id);
+adminStatus("All visible classes unlocked!");
+}
+function checkName(){
+if(!isJaximum()&&state.playerClass==="gamer")state.playerClass="";
+document.body.classList.toggle("jaximum-theme",isJaximum());
+$("jaximumPanel").classList.toggle("hidden",!hasAdminAccess());
+$("jaximumPanel").querySelector("h2").textContent=isJaximum()?"🎮 JAXIMUM CONTROL CENTER":"🛠️ DEV CONTROL CENTER";
+$("jaximumPanel").querySelector("p").innerHTML=isJaximum()?"Secret controls are available while your player name is <b>jaximum</b>.":"Developer controls are available while your player name is <b>dev</b>.";
+if(hasAdminAccess()){
+syncAdminFields();
+markPanelUsed(isJaximum()?"jaximum":"dev");
+}
+displayPlayerID();
+update();saveQuietly();
+}
+$("openAlchemyButton").onclick=showAlchemyPage;
+$("leaveAlchemyButton").onclick=showMainPage;
+$("coin").onclick=clickCoin;
+$("clickButton").onclick=clickCoin;
+$("coin").onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();clickCoin()}};
+$("rebirthButton").onclick=rebirth;
+$("saveButton").onclick=saveGame;
+$("buyModeButton").onclick=()=>{buyAmount=buyAmount===1?10:buyAmount===10?100:1;update()};
+$("buyAllButton").onclick=buyAllAffordable;
+$("burstButton").onclick=activateBurst;
+$("luckyButton").onclick=()=>{state.luckyMode=!state.luckyMode;showMessage(`Lucky Mode ${state.luckyMode?"enabled":"disabled"}.`);update();saveQuietly()};
+$("playerName").oninput=checkName;
+$("adminUpgrade").onchange=syncAdminUpgradeFields;
+$("adminSkill").onchange=syncAdminSkillField;
+$("applyStatsButton").onclick=applyAdminStats;
+$("applyUpgradeButton").onclick=applyAdminUpgrade;
+$("maxStatsButton").onclick=()=>{
+if(!requireJaximum())return;
+state.coins=1e100;state.lifetime=1e100;state.clicks=1e30;state.stars=1e30;state.totalStars=1e30;state.prestigeCount=12;
+adminStatus("Huge player stats applied!");
+};
+$("maxUpgradeButton").onclick=()=>{
+if(!requireJaximum())return;
+const item=upgradeData.find(u=>u.id===$("adminUpgrade").value);if(!item)return;
+state.levels[item.id]=1000000;adminStatus(`${item.name} set to level 1,000,000!`);
+};
+$("maxAllUpgradesButton").onclick=()=>{
+if(!requireJaximum())return;
+for(const item of upgradeData)state.levels[item.id]=1000000;
+adminStatus("All upgrade levels set to 1,000,000!");
+};
+$("unlockClassesButton").onclick=unlockAllClasses;
+$("equipAdminClassButton").onclick=()=>{
+if(!requireJaximum())return;
+const id=$("adminClass").value,c=classData.find(x=>x.id===id);
+if(c&&(!c.secret||isJaximum())){
+if(!state.unlockedClasses.includes(id))state.unlockedClasses.push(id);
+state.playerClass=id;adminStatus(`${c.name} equipped!`);
+}
+};
+$("applySkillButton").onclick=()=>{
+if(!requireJaximum())return;
+const s=skillData.find(x=>x.id===$("adminSkill").value);if(!s)return;
+state.tree[s.id]=Math.min(1e9,Math.floor(safeNumber($("adminSkillRank").value)));
+adminStatus(`${s.name} rank changed!`);
+};
+$("adminAddCoins").onclick=()=>{if(requireJaximum()){earn(1e9);adminStatus("Added 1 billion coins!")}};
+$("adminAddStars").onclick=()=>{if(requireJaximum()){state.stars+=1000;state.totalStars+=1000;adminStatus("Added 1,000 stars!")}};
+$("adminSave").onclick=saveGame;
+$("resetButton").onclick=()=>{
+if(!confirm("Delete all game progress, including stars and classes?"))return;
+state=freshState();saveQuietly();showMessage("Fresh start!");update();
+};
+loadGame();
+refreshAdminOptions();
+syncAdminFields();
+const savedName=localStorage.getItem("coinCrazePlayerName")||"";
+playerNameInput.value=savedName;
+displayPlayerID();
+checkName();update();
+refreshLeaderboard();
+setTimeout(submitLeaderboardScore,1500);
+setInterval(submitLeaderboardScore,20000);
+$("refreshLeaderboardButton").addEventListener("click",()=>{refreshLeaderboard();submitLeaderboardScore()});
+
+/* Class-scroll navigation */
+const classScroller=$("classes");
+$("classPrev").onclick=()=>classScroller.scrollBy({left:-Math.max(240,classScroller.clientWidth*.8),behavior:"smooth"});
+$("classNext").onclick=()=>classScroller.scrollBy({left:Math.max(240,classScroller.clientWidth*.8),behavior:"smooth"});
+classScroller.addEventListener("wheel",event=>{
+if(classScroller.scrollWidth<=classScroller.clientWidth)return;
+if(Math.abs(event.deltaY)>Math.abs(event.deltaX)){
+event.preventDefault();
+classScroller.scrollLeft+=event.deltaY;
+}
+},{passive:false});
+
+setInterval(()=>{const income=coinsPerSecond();if(income>0)earn(income);update()},1000);
+setInterval(()=>{
+saveQuietly();
+try{localStorage.setItem("coinCrazePlayerName",playerNameInput.value)}catch(e){}
+},5000);
+playerNameInput.addEventListener("input",()=>{
+try{localStorage.setItem("coinCrazePlayerName",playerNameInput.value)}catch(e){}
+});
+playerNameInput.addEventListener("change",updateLeaderboardName);
+playerNameInput.addEventListener("keydown",event=>{
+if(event.key==="Enter"){
+event.preventDefault();
+playerNameInput.blur();
+updateLeaderboardName();
+}
+});
+</script>
+</body>
+</html>
