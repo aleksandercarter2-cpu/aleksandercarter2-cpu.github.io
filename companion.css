@@ -1,0 +1,68 @@
+/* The companion shares the game's coins and keeps its wardrobe after rebirth. */
+#mainGame{max-width:1500px;grid-template-columns:minmax(260px,1fr) minmax(320px,1.15fr) 330px;align-items:start}
+#mainGame>section{min-width:0}
+.companion-sidebar{position:sticky;top:16px;min-width:0;max-height:calc(100vh - 32px);padding:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#696081 #202640;border-color:#68609a;background:linear-gradient(160deg,#292b4c,#19243b);color:#f3f1ff;text-align:left;box-shadow:0 12px 40px #080e2026}
+.companion-header{padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.companion-eyebrow{margin:0 0 6px;color:#baafe8;font-size:10px;font-weight:bold;letter-spacing:2px;text-transform:uppercase}
+.companion-sidebar h2{color:#f3f1ff!important;font-size:20px;margin:0}
+.companion-badge{display:grid;place-items:center;width:34px;height:34px;border:1px solid #72649e;border-radius:50%;color:#e4caff;font-size:20px}
+.companion-intro{padding:0 20px;margin:10px 0 14px;font-size:12px;line-height:1.6;color:#bdc6df}
+.creature-choices{display:flex;gap:6px;margin:0 20px}
+.creature-choices button{flex:1;min-width:0;margin:0;padding:9px 3px;background:#172038!important;color:#b7c2dd!important;border:1px solid #414363;font-size:11px}
+.creature-choices button[aria-pressed="true"]{background:#4a3e6d!important;border-color:#ba9ef2;color:#f4eaff!important}
+.creature-choices button span{display:block;font-size:19px;margin-bottom:4px}
+.companion-stage{position:relative;isolation:isolate;margin:10px 12px 0;border-radius:14px;background:radial-gradient(ellipse at 50% 56%,#6775b52e 0,transparent 65%);overflow:hidden}
+.companion-stage:before{content:"";position:absolute;z-index:-1;inset:35px 25px 50px;border:1px solid #9998d11c;border-radius:50%;box-shadow:0 0 0 22px #9998d108,0 0 0 44px #9998d106}
+.companion-stage svg{display:block;width:100%;height:auto;max-height:250px;overflow:visible}
+.creature-float{animation:creature-bob 4s ease-in-out infinite;transform-origin:center}
+.creature-spark{animation:creature-twinkle 3s ease-in-out infinite}
+.companion-name{text-align:center;margin:-8px 0 2px;font-size:22px;letter-spacing:.3px}
+.companion-species{text-align:center;margin:0;color:#b8c5df;font-size:12px}
+.companion-collection{margin:15px 20px 0;display:flex;align-items:center;gap:8px;color:#bfb1e5;font-size:11px}
+.companion-collection .progress-track{flex:1;margin:0;height:5px;background:#10182a}
+.companion-collection .progress-fill{background:linear-gradient(90deg,#8de0bc,#c5a1ff);transition:width .3s}
+.companion-equipment{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;padding:12px 20px 0;min-height:35px}
+.companion-equipment span{border:1px solid #4a4a69;border-radius:20px;padding:4px 8px;color:#d2d8ee;font-size:10px;background:#1a2238}
+.companion-status{color:#9de7c2;min-height:32px;font-size:11px;line-height:1.5;text-align:center;margin:8px 20px 12px}
+.companion-wardrobe{border-top:1px solid #474563;padding:14px 16px 16px;background:#131c302e}
+.companion-tabs{display:flex;gap:5px;padding:4px;background:#141d32;border-radius:9px;margin-bottom:12px}
+.companion-tabs button{flex:1;background:transparent!important;color:#aebbd6!important;margin:0;font-size:12px;padding:9px 4px}
+.companion-tabs button[aria-selected="true"]{background:#3d385d!important;color:#f3eaff!important}
+.companion-items{max-height:250px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#696081 #172238;padding-right:3px}
+.companion-item{display:flex;gap:9px;align-items:center;padding:10px 0;border-bottom:1px solid #ffffff0d}
+.companion-item:last-child{border-bottom:0}
+.companion-item-icon{display:grid;place-items:center;flex:0 0 32px;height:34px;font-size:22px;border-radius:8px;background:#ffffff08}
+.companion-item-info{flex:1;min-width:0}
+.companion-item h3{font-size:12px;margin:0 0 4px;color:#f0edff}
+.companion-item p{font-size:10px;line-height:1.5;margin:0;color:#b7c4df}
+.companion-item button{margin:0;padding:8px;font-size:10px;min-width:62px;background:#d0b1ff!important;color:#241938!important;flex-shrink:0;border:1px solid transparent}
+.companion-item button:disabled{background:#3f465f!important;color:#aeb9d0!important}
+.companion-item button.is-equipped{background:#254b45!important;color:#b1f1d7!important;border-color:#477d6d}
+.companion-empty{text-align:center;padding:15px 10px;color:#b9c5df;font-size:12px;line-height:1.7}
+.companion-empty strong{display:block;color:#e7e1f7;margin-bottom:4px;font-size:13px}
+.companion-next{margin-top:12px;padding:12px;border:1px dashed #605b7f;border-radius:10px;font-size:11px;line-height:1.6;color:#c6c5df}
+.companion-next strong{color:#e4ccff}
+.companion-footnote{font-size:10px;line-height:1.5;color:#9aaac6;text-align:center;margin:12px 0 0}
+.companion-unlock{color:#bb9ce9!important}
+body.jaximum-theme .companion-unlock{color:#694397!important}
+.companion-sidebar button:focus-visible{outline:3px solid #95e6d0;outline-offset:3px}
+@keyframes creature-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes creature-twinkle{0%,100%{opacity:.35}50%{opacity:1}}
+@media(min-width:701px) and (max-width:1120px){
+ #mainGame{grid-template-columns:minmax(260px,1fr) minmax(280px,1fr)}
+ .companion-sidebar{grid-column:1/-1;grid-row:1;position:static;max-height:none}
+ .companion-body{display:grid;grid-template-columns:1fr 1fr;align-items:start}
+ .companion-wardrobe{border-top:0;border-left:1px solid #474563;margin-top:15px}
+ .companion-stage svg{max-height:250px}
+ .companion-items{max-height:290px}
+}
+@media(max-width:700px){
+ #mainGame{grid-template-columns:minmax(0,1fr);padding:0 12px;gap:12px}
+ #mainGame>.mine-column{display:contents}
+ .mine-column>.panel:first-child{order:-3}
+ .companion-sidebar{order:-2;position:static;max-height:none;margin-bottom:0}
+ #mainGame>.shop-column{order:-1}
+ .companion-stage svg{max-height:220px}
+ .companion-items{max-height:220px}
+}
+@media(prefers-reduced-motion:reduce){.creature-float,.creature-spark{animation:none}.companion-collection .progress-fill{transition:none}}

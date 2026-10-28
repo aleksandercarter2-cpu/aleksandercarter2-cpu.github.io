@@ -142,6 +142,7 @@ body.jaximum-theme .path-node.owned{background:#d6ebff}
 #leaderboardTable tr.me{background:#ffffff12}
 .leaderboard-wrap{overflow-x:auto}
 </style>
+<link rel="stylesheet" href="companion.css">
 </head>
 <body>
 <header>
@@ -162,7 +163,7 @@ body.jaximum-theme .path-node.owned{background:#d6ebff}
 </div>
 
 <main id="mainGame">
-<section>
+<section class="mine-column">
 <div class="panel center">
 <h2>🪙 Your Coin Mine</h2>
 <p>Click the coin to earn money!</p>
@@ -174,7 +175,7 @@ body.jaximum-theme .path-node.owned{background:#d6ebff}
 <div class="panel"><h2>🏆 Achievements</h2><div id="achievements"></div></div>
 <div class="panel rebirth center">
 <h2>✨ Prestige / Rebirth</h2>
-<p>Earn one star for every 100,000 lifetime coins. Rebirth resets coins and upgrades but keeps stars, classes, and skills.</p>
+<p>Earn one star for every 100,000 lifetime coins. Rebirth resets coins and upgrades but keeps stars, classes, skills, and companion gear.</p>
 <div class="progress-track"><div id="rebirthProgress" class="progress-fill"></div></div>
 <p id="rebirthInfo" class="small"></p>
 <button id="rebirthButton">✨ REBIRTH</button>
@@ -187,7 +188,7 @@ body.jaximum-theme .path-node.owned{background:#d6ebff}
 </div>
 </section>
 
-<section>
+<section class="shop-column">
 <div class="panel">
 <h2>🛒 Upgrade Shop</h2>
 <div class="button-row">
@@ -202,6 +203,34 @@ body.jaximum-theme .path-node.owned{background:#d6ebff}
 <div id="upgrades"></div>
 </div>
 </section>
+<aside id="companionSidebar" class="panel companion-sidebar" aria-labelledby="companionHeading">
+<div class="companion-header"><div><p class="companion-eyebrow">A little magic, all yours</p><h2 id="companionHeading">Mythical Companion</h2></div><span class="companion-badge" aria-hidden="true">✦</span></div>
+<p class="companion-intro">Build your empire. Dress your legend. Shop upgrades unlock gear for your companion.</p>
+<div class="companion-body">
+<div class="companion-profile">
+<div class="creature-choices" role="group" aria-label="Choose your base creature">
+<button type="button" data-creature="dragon" aria-pressed="true"><span aria-hidden="true">🐉</span>Dragon</button>
+<button type="button" data-creature="phoenix" aria-pressed="false"><span aria-hidden="true">🔥</span>Phoenix</button>
+<button type="button" data-creature="unicorn" aria-pressed="false"><span aria-hidden="true">🦄</span>Unicorn</button>
+</div>
+<div id="companionArt" class="companion-stage"></div>
+<h3 id="companionName" class="companion-name">Moss</h3>
+<p id="companionSpecies" class="companion-species">Forest dragon</p>
+<div class="companion-collection"><span id="companionCollection">0 / 18 collected</span><div class="progress-track" aria-hidden="true"><div id="companionProgress" class="progress-fill"></div></div></div>
+<div id="companionEquipment" class="companion-equipment" aria-label="Equipped companion gear"></div>
+<p id="companionStatus" class="companion-status" role="status" aria-live="polite">Your adventure starts with a little dragon.</p>
+</div>
+<div class="companion-wardrobe">
+<div class="companion-tabs" role="tablist" aria-label="Companion wardrobe">
+<button type="button" id="companionGearTab" data-companion-tab="gear" role="tab" aria-selected="true" aria-controls="companionItems">Your gear</button>
+<button type="button" id="companionShopTab" data-companion-tab="shop" role="tab" aria-selected="false" aria-controls="companionItems" tabindex="-1">Outfit shop</button>
+</div>
+<div id="companionItems" class="companion-items" role="tabpanel" aria-labelledby="companionGearTab" tabindex="0"></div>
+<div id="companionNext" class="companion-next"></div>
+<p class="companion-footnote">Purely magical style. Gear is cosmetic, saves automatically, and stays through rebirth.</p>
+</div>
+</div>
+</aside>
 </main>
 
 <div id="alchemyPortal" class="panel center hidden" style="max-width:1200px;margin:20px auto">
@@ -306,6 +335,7 @@ Coin Craze · Progress saves automatically in this browser.<br>
 <button id="resetButton" style="background:#e66b76">Reset Game</button>
 </footer>
 
+<script src="companion.js"></script>
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
@@ -399,7 +429,7 @@ const achievementData=[
 {id:"builder",text:"🏭 Tycoon — Own 10 upgrade levels",test:s=>totalLevels()>=10},
 {id:"prestige",text:"✨ Reborn — Prestige for the first time",test:s=>s.prestigeCount>=1}
 ];
-function freshState(){return{coins:0,lifetime:0,clicks:0,stars:0,totalStars:0,prestigeCount:0,levels:{},achievements:[],tree:{},playerClass:"",unlockedClasses:[],potions:[],specialPaths:{},activeSpecialPaths:{},dailyClaimDay:"",luckyMode:false,burstUntil:0,burstReadyAt:0}}
+function freshState(){return{companion:freshCompanion(),coins:0,lifetime:0,clicks:0,stars:0,totalStars:0,prestigeCount:0,levels:{},achievements:[],tree:{},playerClass:"",unlockedClasses:[],potions:[],specialPaths:{},activeSpecialPaths:{},dailyClaimDay:"",luckyMode:false,burstUntil:0,burstReadyAt:0}}
 let state=freshState(),buyAmount=1;
 let currentPage="main";
 const potionData=[
@@ -702,6 +732,9 @@ try{
 const saved=localStorage.getItem("coinCrazeAdvancedSave");
 if(saved){state={...freshState(),...JSON.parse(saved)};state.levels=state.levels||{};state.tree=state.tree||{};state.achievements=state.achievements||[];state.unlockedClasses=state.unlockedClasses||[];state.potions=state.potions||[];state.specialPaths=state.specialPaths||{};state.activeSpecialPaths=state.activeSpecialPaths||{}}
 }catch(e){}
+state.companion=normalizeCompanion(state.companion);
+unlockCompanionGear();
+$("companionStatus").textContent=state.companion.owned.length?"Your wardrobe is saved. Ready for another adventure.":"Shop upgrades unlock your companion's first gear.";
 }
 function clickCoin(){
 const chance=Math.min(.75,.05+skillRank("goldRush")*.05+(state.luckyMode?.10:0)+(potionOwned("fortune")?.05:0));
@@ -715,11 +748,13 @@ const item=upgradeData.find(u=>u.id===id);if(!item)return;
 let bought=0;amount=Math.min(10000,Math.max(1,Math.floor(amount)));
 for(let i=0;i<amount;i++){const cost=price(item);if(state.coins<cost)break;state.coins-=cost;state.levels[id]=level(id)+1;bought++}
 if(bought)showMessage(`${item.name}: bought ${bought} level(s)!`);
+unlockCompanionGear(true);
 update();saveQuietly();
 }
 function buyAllAffordable(){
 let bought=0;
 for(const item of upgradeData){let guard=0;while(state.coins>=price(item)&&guard<1000){state.coins-=price(item);state.levels[item.id]=level(item.id)+1;bought++;guard++}}
+unlockCompanionGear(true);
 showMessage(bought?`Bought ${bought} upgrade levels!`:"Not enough coins for upgrades.");update();saveQuietly();
 }
 function buySkill(id){
@@ -734,7 +769,7 @@ state.playerClass=id;showMessage(`${c.name} equipped!`);if(id!=="alchemist"&&cur
 function rebirth(){
 const gain=Math.max(0,Math.floor(state.lifetime/100000)-state.totalStars);
 if(gain<=0){showMessage("Earn more lifetime coins to gain a prestige star!");return}
-if(!confirm(`Prestige for ${format(gain)} star(s)? Coins and upgrades reset, but stars, classes and skills remain.`))return;
+if(!confirm(`Prestige for ${format(gain)} star(s)? Coins and upgrades reset, but stars, classes, skills and companion gear remain.`))return;
 state.stars+=gain;state.totalStars+=gain;state.prestigeCount++;state.coins=0;state.levels={};state.achievements=[];
 showMessage(`Prestige complete! +${format(gain)} stars!`);update();saveQuietly();
 }
@@ -750,7 +785,7 @@ for(const a of achievementData)if(a.test(state)&&!state.achievements.includes(a.
 function renderUpgrades(){
 $("upgrades").innerHTML=upgradeData.map(item=>{
 const cost=price(item),lv=level(item.id);
-return`<div class="upgrade"><div class="emoji">${item.emoji}</div><div class="info"><h3>${item.name} <span class="small">Lv. ${format(lv)}</span></h3><p>${item.desc}</p><p>Cost: ${format(cost)} coins</p></div><button data-buy="${item.id}" ${state.coins<cost?"disabled":""}>BUY</button></div>`;
+return`<div class="upgrade"><div class="emoji">${item.emoji}</div><div class="info"><h3>${item.name} <span class="small">Lv. ${format(lv)}</span></h3><p>${item.desc}</p>${companionUpgradeHint(item.id)}<p>Cost: ${format(cost)} coins</p></div><button data-buy="${item.id}" ${state.coins<cost?"disabled":""}>BUY</button></div>`;
 }).join("");
 document.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>buyUpgrade(b.dataset.buy));
 }
@@ -818,6 +853,7 @@ return`<div class="${done?"unlocked":"locked"}">${done?"✓ ":"🔒 "}${a.text}<
 }).join("");
 }
 function update(){
+unlockCompanionGear();
 refreshUnlockedClasses();checkAchievements();
 $("coins").textContent=format(state.coins);
 $("power").textContent=format(clickPower());
@@ -831,7 +867,7 @@ $("buyModeButton").textContent=`Buy: ×${buyAmount}`;
 $("luckyButton").textContent=`🍀 Lucky Mode: ${state.luckyMode?"ON":"OFF"}`;
 $("burstButton").disabled=Date.now()<state.burstReadyAt;
 $("boostInfo").textContent=Date.now()<state.burstUntil?`Coin Burst active for ${Math.ceil((state.burstUntil-Date.now())/1000)} seconds!`:Date.now()<state.burstReadyAt?`Coin Burst cooldown: ${Math.ceil((state.burstReadyAt-Date.now())/1000)}s`:"Coin Burst gives 10 seconds of 2× income (60-second cooldown).";
-renderUpgrades();renderSkills();renderClasses();renderSpecialPaths();renderAchievements();
+renderUpgrades();renderSkills();renderClasses();renderSpecialPaths();renderAchievements();renderCompanion();
 $("alchemyPortal").classList.toggle("hidden",state.playerClass!=="alchemist"||currentPage==="alchemy");
 if(currentPage==="alchemy"&&state.playerClass!=="alchemist")showMainPage();
 if(currentPage==="alchemy")renderAlchemy();
@@ -985,8 +1021,9 @@ $("adminAddStars").onclick=()=>{if(requireJaximum()){state.stars+=1000;state.tot
 $("adminSave").onclick=saveGame;
 $("resetButton").onclick=()=>{
 if(!confirm("Delete all game progress, including stars and classes?"))return;
-state=freshState();saveQuietly();showMessage("Fresh start!");update();
+state=freshState();companionTab="gear";$("companionGearTab").click();$("companionStatus").textContent="Your adventure starts with a little dragon.";saveQuietly();showMessage("Fresh start!");update();
 };
+initCompanion();
 loadGame();
 refreshAdminOptions();
 syncAdminFields();
